@@ -2,179 +2,528 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>I have a question...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Will you be my love? 💖</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none;
         }
 
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             min-height: 100vh;
-            background-color: #ffeef2; /* Soft Pink */
-            font-family: 'Comic Sans MS', 'Arial', sans-serif;
-            overflow: hidden;
-            text-align: center;
+            background: linear-gradient(145deg, #ff99aa 0%, #ff4d6d 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Quicksand', 'Poppins', cursive, sans-serif;
             padding: 20px;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        #content-wrapper {
+        /* full screen card */
+        .card {
+            width: 100%;
+            max-width: 1200px;
+            min-height: 90vh;
+            background: rgba(255, 250, 240, 0.96);
+            border-radius: 72px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3), 0 0 0 12px rgba(255, 200, 200, 0.7);
+            padding: 2rem 2rem 3rem;
+            text-align: center;
+            transition: all 0.2s;
+            backdrop-filter: blur(2px);
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* bigger picture frame */
+        .picture-frame {
+            background: #ffe3e8;
+            border-radius: 48px;
+            padding: 20px;
+            margin: 0 auto 20px;
+            width: 85%;
+            max-width: 550px;
+            height: auto;
+            display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+        }
+
+        #cuteImage {
             width: 100%;
-            height: 100%;
-        }
-
-        #main-gif {
-            width: 80%;
-            max-width: 500px; /* Large GIF size */
             height: auto;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
+            max-height: 450px;
+            object-fit: contain;
+            border-radius: 40px;
+            background: #fff0f0;
+            transition: transform 0.25s;
         }
 
-        h1 {
-            color: #ff4d6d;
-            font-size: 2.5rem;
-            margin-bottom: 40px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        .question {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #c53a5f;
+            margin: 20px 0 12px;
+            letter-spacing: -1px;
         }
 
-        .btn-container {
+        .dynamic-message {
+            font-size: 1.5rem;
+            color: #e06c8c;
+            background: #fff0f3;
+            padding: 16px 28px;
+            border-radius: 80px;
+            margin: 16px auto 25px;
+            font-weight: 600;
+            display: inline-block;
+            max-width: 90%;
+        }
+
+        /* buttons container - relative for moving button */
+        .buttons {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 30px;
-            width: 100%;
+            gap: 50px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            min-height: 160px;
             position: relative;
         }
 
-        button {
-            padding: 15px 40px;
+        .btn {
             border: none;
-            border-radius: 50px;
-            cursor: pointer;
             font-weight: bold;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        #yesBtn {
-            background-color: #ff4d6d;
-            color: white;
-            z-index: 100; /* Ensure it stays on top as it grows */
-        }
-
-        #noBtn {
-            background-color: #999;
-            color: white;
-            position: relative;
+            font-size: 2rem;
+            padding: 20px 48px;
+            border-radius: 120px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.2, 0.64, 1);
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+            font-family: inherit;
+            min-width: 180px;
+            letter-spacing: 2px;
             z-index: 10;
         }
 
-        /* Success screen layout */
-        .success h1 {
-            font-size: 3rem;
-            color: #ff0054;
+        #yesBtn {
+            background: #e8436e;
+            color: white;
+            border: 3px solid #fff0f0;
+            transform: scale(1);
+        }
+
+        #noBtn {
+            background: #9e7b7b;
+            color: #fff0e6;
+            border: 3px solid #ffcfcf;
+            transform: scale(1);
+            position: relative;
+        }
+
+        /* moving button style */
+        .moving-btn {
+            position: absolute !important;
+            transition: left 0.05s linear, top 0.05s linear;
+            cursor: default;
+            pointer-events: auto;
+        }
+
+        /* huge yes button after 3+ no */
+        .yes-huge {
+            transform: scale(2.2) !important;
+            font-size: 2.5rem !important;
+            padding: 28px 70px !important;
+            min-width: 300px;
+        }
+
+        /* disabled no button (after 3 clicks it becomes moving and also disabled visually) */
+        #noBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(0.2);
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 1rem;
+            color: #f29bb0;
+            font-weight: 500;
+        }
+
+        @media (max-width: 700px) {
+            .card {
+                padding: 1.5rem;
+            }
+            .btn {
+                font-size: 1.4rem;
+                padding: 14px 28px;
+                min-width: 140px;
+            }
+            .question {
+                font-size: 2rem;
+            }
+            .dynamic-message {
+                font-size: 1.2rem;
+            }
+            .yes-huge {
+                transform: scale(1.6) !important;
+                font-size: 1.8rem !important;
+                padding: 20px 40px !important;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div id="content-wrapper">
-        <img id="main-gif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif" alt="Cute character">
-        <h1 id="question">Israa, do you love me? ❤️</h1>
-        
-        <div class="btn-container">
-            <button id="yesBtn">Yes</button>
-            <button id="noBtn">No</button>
-        </div>
+<div class="card" id="appCard">
+    <div class="picture-frame">
+        <img id="cuteImage" src="https://media.tenor.com/VSzF7_kRqbcAAAAC/couple-cute.gif" alt="cute couple">
     </div>
+    
+    <div class="question">💕 Israa, do you love me? 💕</div>
+    <div class="dynamic-message" id="messageBox">💗 my heart is yours 💗</div>
+    
+    <div class="buttons" id="buttonsArea">
+        <button class="btn" id="yesBtn">💖 YES 💖</button>
+        <button class="btn" id="noBtn">❌ NO ❌</button>
+    </div>
+    <footer>✨ every click speaks from the heart ✨</footer>
+</div>
 
-    <script>
-        const yesBtn = document.getElementById('yesBtn');
-        const noBtn = document.getElementById('noBtn');
-        const gif = document.getElementById('main-gif');
-        const question = document.getElementById('question');
-
-        let noCount = 0;
-        let yesScale = 1;
-        let noScale = 1;
-
-        // Sequence of sad GIFs for the male character
-        const sadGifs = [
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/OPU6wEKPcElt6/giphy.gif", // Pout
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/7SF5scGB2AFrO/giphy.gif", // Crying
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/d2lcHJTG5Tscg/giphy.gif"  // Heartbroken
-        ];
-
-        const sadMessages = [
-            "Are you sure Sarouaa? 🥺",
-            "Please think about it again... 💔",
-            "No more cuddles if you say No this time! 😤"
-        ];
-
-        noBtn.addEventListener('click', () => {
-            if (noCount < 3) {
-                noCount++;
-                
-                // Update text and GIF
-                question.innerText = sadMessages[noCount - 1];
-                gif.src = sadGifs[noCount - 1];
-
-                // Scaling logic
-                // By the 3rd click, yesScale will be huge
-                yesScale += 2.5; 
-                noScale -= 0.2;
-
-                yesBtn.style.transform = `scale(${yesScale})`;
-                noBtn.style.transform = `scale(${noScale})`;
-            }
-
-            if (noCount >= 3) {
-                moveButton();
-            }
-        });
-
-        // Evasive logic - button runs away starting at 3rd click
-        noBtn.addEventListener('mouseover', () => {
-            if (noCount >= 3) {
-                moveButton();
-            }
-        });
-
-        function moveButton() {
-            // Randomly move button within the viewport
-            const padding = 50;
-            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - padding);
-            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - padding);
-            
-            noBtn.style.position = 'fixed';
-            noBtn.style.left = `${x}px`;
-            noBtn.style.top = `${y}px`;
+<script>
+    // ---------- STATE ----------
+    let noClickCount = 0;          // number of times "NO" clicked
+    let yesClicked = false;        // if yes is clicked, happy state
+    let noDisabled = false;        // after 3+ no clicks, no button becomes disabled and moves
+    let moveHandlerActive = false;
+    
+    // DOM elements
+    const yesButton = document.getElementById('yesBtn');
+    const noButton = document.getElementById('noBtn');
+    const messageBox = document.getElementById('messageBox');
+    const cuteImage = document.getElementById('cuteImage');
+    const buttonsContainer = document.getElementById('buttonsArea');
+    
+    // ----- GIFs for two cute characters -----
+    // neutral / happy couple (starting)
+    const defaultGif = "https://media.tenor.com/VSzF7_kRqbcAAAAC/couple-cute.gif";
+    // sad male character (male looks sad, female comforting or neutral)
+    const sadGif1 = "https://media.tenor.com/MmKxUmT8yU0AAAAC/sad-boy.gif";          // sad boy alone
+    const sadGif2 = "https://media.tenor.com/hsd5CgzZ74sAAAAC/sad-anime-couple.gif";  // couple, male sad
+    const sadGif3 = "https://media.tenor.com/HbHmK9_3Y2UAAAAC/sad-cat-couple.gif";    // very sad male
+    // happy ending - kissing/cuddling
+    const happyGif = "https://media.tenor.com/Lh3kQcX5eBEAAAAC/anime-kiss.gif";       // romantic kiss
+    
+    // messages for NO clicks
+    const noMessages = [
+        "💔 Oh no... think again, love! 💕",
+        "🥺 Are you sure? My heart flutters only for you... click YES?",
+        "😭 Don't break my heart! I'll keep asking cutely!",
+        "💘 Last chance before the NO button runs away! Just say YES!"
+    ];
+    
+    // update image based on noClickCount (sadness level)
+    function updateSadMood() {
+        if (yesClicked) return;
+        
+        if (noClickCount === 0) {
+            cuteImage.src = defaultGif;
+        } else if (noClickCount === 1) {
+            cuteImage.src = sadGif1;
+        } else if (noClickCount === 2) {
+            cuteImage.src = sadGif2;
+        } else if (noClickCount >= 3) {
+            cuteImage.src = sadGif3;
         }
-
-        yesBtn.addEventListener('click', () => {
-            // Success State
-            question.innerText = "YAY! I knew it! I love you too! ❤️✨";
-            // Cute kissing/cuddling GIF
-            gif.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/v1.Y2lkPTc5MGI3NjExYzh6Z3Z4bmh6eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/MDJ9IbxxvDUQM/giphy.gif"; 
+        
+        // update message
+        let msg = "";
+        if (noClickCount === 1) msg = noMessages[0];
+        else if (noClickCount === 2) msg = noMessages[1];
+        else if (noClickCount === 3) msg = noMessages[2];
+        else if (noClickCount > 3) msg = noMessages[3] + " 😘";
+        else msg = "💗 my heart is yours 💗";
+        
+        if (noClickCount > 0 && noClickCount <= 3) {
+            messageBox.innerHTML = msg + ` <span style="font-size:1.2rem;">(${noClickCount}/3)</span>`;
+        } else if (noClickCount > 3) {
+            messageBox.innerHTML = "💕 The NO button is shy now! Just click YES, my love! 💕";
+        } else {
+            messageBox.innerHTML = msg;
+        }
+        
+        // aggressive resizing: YES gets much bigger, NO gets much smaller
+        if (!yesClicked && !noDisabled) {
+            // each NO click: YES scale increases by 0.3, NO decreases by 0.25
+            let yesScale = Math.min(3.2, 1 + (noClickCount * 0.45));
+            let noScale = Math.max(0.2, 1 - (noClickCount * 0.3));
+            yesButton.style.transform = `scale(${yesScale})`;
+            noButton.style.transform = `scale(${noScale})`;
             
-            // Cleanup
-            noBtn.style.display = 'none';
-            yesBtn.style.transform = 'scale(1.5)';
-            document.body.style.backgroundColor = '#ffc2d1';
-        });
-    </script>
+            // extra glow
+            if (noClickCount >= 2) {
+                yesButton.style.boxShadow = "0 0 0 6px #ffb7c5, 0 18px 32px rgba(0,0,0,0.3)";
+            } else {
+                yesButton.style.boxShadow = "0 10px 18px rgba(0, 0, 0, 0.2)";
+            }
+        }
+        
+        // on 3rd click, we will later enable moving and make yes huge
+        if (noClickCount === 3 && !yesClicked) {
+            yesButton.classList.add('yes-huge');
+            yesButton.style.transform = "scale(2.2)";
+            noButton.style.transform = "scale(0.2)";
+            noButton.style.opacity = "0.7";
+        }
+    }
+    
+    // ----- make NO button dodge mouse -----
+    function startMovingNoButton() {
+        if (moveHandlerActive) return;
+        moveHandlerActive = true;
+        
+        // remove any existing listener first
+        if (window._moveHandler) {
+            buttonsContainer.removeEventListener("mousemove", window._moveHandler);
+        }
+        
+        const handleMouseMove = (e) => {
+            if (!noDisabled || yesClicked) return;
+            if (!noButton) return;
+            
+            const rect = noButton.getBoundingClientRect();
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            
+            const btnCenterX = rect.left + rect.width / 2;
+            const btnCenterY = rect.top + rect.height / 2;
+            const dx = mouseX - btnCenterX;
+            const dy = mouseY - btnCenterY;
+            const distance = Math.hypot(dx, dy);
+            const MOVE_THRESHOLD = 130;
+            
+            if (distance < MOVE_THRESHOLD) {
+                // move away from cursor: direction opposite
+                let angle = Math.atan2(dy, dx);
+                let moveX = Math.cos(angle) * -85;
+                let moveY = Math.sin(angle) * -85;
+                
+                const containerRect = buttonsContainer.getBoundingClientRect();
+                let newLeft = (rect.left - containerRect.left) + moveX;
+                let newTop = (rect.top - containerRect.top) + moveY;
+                
+                // keep inside container
+                const maxLeft = containerRect.width - rect.width;
+                const maxTop = containerRect.height - rect.height;
+                newLeft = Math.min(maxLeft, Math.max(0, newLeft));
+                newTop = Math.min(maxTop, Math.max(0, newTop));
+                
+                noButton.style.position = "absolute";
+                noButton.style.left = `${newLeft}px`;
+                noButton.style.top = `${newTop}px`;
+                noButton.classList.add("moving-btn");
+            }
+        };
+        
+        buttonsContainer.addEventListener("mousemove", handleMouseMove);
+        window._moveHandler = handleMouseMove;
+    }
+    
+    function stopMovingNoButton() {
+        if (window._moveHandler) {
+            buttonsContainer.removeEventListener("mousemove", window._moveHandler);
+            window._moveHandler = null;
+        }
+        moveHandlerActive = false;
+        // reset position style but keep disabled
+        if (noButton) {
+            noButton.style.position = "";
+            noButton.style.left = "";
+            noButton.style.top = "";
+            noButton.classList.remove("moving-btn");
+        }
+    }
+    
+    // enforce no button disabled + moving after 3+ clicks
+    function enforceNoDisabled() {
+        if (noClickCount >= 3 && !yesClicked) {
+            noDisabled = true;
+            noButton.disabled = true;
+            // make YES button huge (half screen effect)
+            yesButton.classList.add('yes-huge');
+            yesButton.style.transform = "scale(2.2)";
+            noButton.style.transform = "scale(0.2)";
+            noButton.style.opacity = "0.6";
+            messageBox.innerHTML = "💖 You can't say NO anymore! The button is running away... just press YES! 💖";
+            startMovingNoButton();
+        } else if (noClickCount < 3 && noDisabled === true) {
+            noDisabled = false;
+            noButton.disabled = false;
+            stopMovingNoButton();
+        }
+    }
+    
+    // handle NO click
+    function onNoClick() {
+        if (yesClicked) return;
+        if (noDisabled) return;
+        
+        noClickCount++;
+        
+        // update images and resizing
+        updateSadMood();
+        
+        // after third click, enforce no button disabled and moving
+        if (noClickCount >= 3) {
+            enforceNoDisabled();
+            // extra: make YES button even larger (already done in enforce)
+            if (noClickCount === 3) {
+                // ensure yes takes half screen visually
+                yesButton.style.fontSize = "2.8rem";
+                yesButton.style.padding = "32px 80px";
+            }
+            return;
+        }
+        
+        // if not yet 3, just resize normally (done in updateSadMood)
+        
+        // play a tiny beep for fun (optional)
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 880;
+            gain.gain.value = 0.1;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.2);
+            osc.stop(audioCtx.currentTime + 0.2);
+        } catch(e) {}
+    }
+    
+    // YES! happy ending
+    function onYesClick() {
+        if (yesClicked) return;
+        yesClicked = true;
+        
+        // disable no completely
+        noButton.disabled = true;
+        if (window._moveHandler) {
+            buttonsContainer.removeEventListener("mousemove", window._moveHandler);
+            window._moveHandler = null;
+        }
+        noDisabled = true;
+        stopMovingNoButton();
+        
+        // change to happy kissing/cuddling GIF
+        cuteImage.src = happyGif;
+        messageBox.innerHTML = "💞 YAAAY! I LOVE YOU TOO! Now let's cuddle forever! 💞";
+        messageBox.style.background = "#ffe0e7";
+        messageBox.style.fontSize = "1.8rem";
+        
+        // make YES button giant and happy, NO tiny and fade
+        yesButton.style.transform = "scale(2.5)";
+        yesButton.style.background = "#ff1e4d";
+        yesButton.style.boxShadow = "0 0 30px #ff99aa";
+        noButton.style.transform = "scale(0.1)";
+        noButton.style.opacity = "0";
+        noButton.style.pointerEvents = "none";
+        
+        document.querySelector('.question').innerHTML = "💘 YOU LOVE ME! 💘";
+        
+        // floating hearts celebration
+        createFloatingHearts();
+    }
+    
+    // hearts animation
+    function createFloatingHearts() {
+        const body = document.body;
+        for (let i = 0; i < 50; i++) {
+            const heart = document.createElement('div');
+            heart.innerHTML = ['❤️','💖','💗','💘','💝','💕','💞'][Math.floor(Math.random()*7)];
+            heart.style.position = 'fixed';
+            heart.style.fontSize = (Math.random() * 35 + 20) + 'px';
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.bottom = '-30px';
+            heart.style.pointerEvents = 'none';
+            heart.style.zIndex = '9999';
+            heart.style.opacity = '0.9';
+            heart.style.animation = `floatUp ${Math.random() * 3 + 2}s linear forwards`;
+            heart.style.filter = 'drop-shadow(0 0 6px hotpink)';
+            body.appendChild(heart);
+            setTimeout(() => heart.remove(), 4500);
+        }
+        if (!document.querySelector('#heartKeyframe')) {
+            const style = document.createElement('style');
+            style.id = 'heartKeyframe';
+            style.textContent = `
+                @keyframes floatUp {
+                    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                    100% { transform: translateY(-100vh) rotate(20deg); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+    
+    // reset on window resize to keep moving button inside
+    function resetPositionOnResize() {
+        if (noDisabled && !yesClicked && noButton) {
+            const containerRect = buttonsContainer.getBoundingClientRect();
+            const btnRect = noButton.getBoundingClientRect();
+            let left = parseFloat(noButton.style.left);
+            let top = parseFloat(noButton.style.top);
+            if (isNaN(left)) left = 0;
+            if (isNaN(top)) top = 0;
+            const maxLeft = containerRect.width - btnRect.width;
+            const maxTop = containerRect.height - btnRect.height;
+            if (left > maxLeft) noButton.style.left = Math.max(0, maxLeft) + 'px';
+            if (top > maxTop) noButton.style.top = Math.max(0, maxTop) + 'px';
+            if (left < 0) noButton.style.left = '0px';
+            if (top < 0) noButton.style.top = '0px';
+        }
+    }
+    
+    // attach events
+    yesButton.addEventListener('click', onYesClick);
+    noButton.addEventListener('click', onNoClick);
+    window.addEventListener('resize', resetPositionOnResize);
+    
+    // initial state
+    function init() {
+        noClickCount = 0;
+        yesClicked = false;
+        noDisabled = false;
+        noButton.disabled = false;
+        yesButton.style.transform = "scale(1)";
+        noButton.style.transform = "scale(1)";
+        yesButton.classList.remove('yes-huge');
+        noButton.style.opacity = "1";
+        noButton.style.position = "";
+        noButton.style.left = "";
+        noButton.style.top = "";
+        noButton.classList.remove('moving-btn');
+        cuteImage.src = defaultGif;
+        messageBox.innerHTML = "💗 my heart is yours 💗";
+        messageBox.style.background = "";
+        document.querySelector('.question').innerHTML = "💕 Do you love me? 💕";
+        yesButton.style.background = "#e8436e";
+        stopMovingNoButton();
+        if (window._moveHandler) buttonsContainer.removeEventListener("mousemove", window._moveHandler);
+        moveHandlerActive = false;
+    }
+    init();
+</script>
 </body>
 </html>
