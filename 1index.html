@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I have a question...</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Keeps items starting from top */
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            background-color: #ffdae0; /* Pretty Pink */
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            padding-top: 5vh;
+        }
+
+        #question {
+            color: #d63384;
+            font-size: clamp(1.5rem, 5vw, 3rem); /* Responsive size */
+            margin-bottom: 20px;
+            text-align: center;
+            z-index: 100; /* Always stay on top */
+            position: relative;
+        }
+
+        .image-container {
+            height: 40vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #main-image {
+            max-height: 100%;
+            width: auto;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .buttons-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            height: 40vh; /* Reserved space for growing buttons */
+            position: relative;
+        }
+
+        button {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: transform 0.2s ease, all 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        #yesBtn {
+            background-color: #ff4d94;
+            color: white;
+            z-index: 90;
+        }
+
+        #noBtn {
+            background-color: #adb5bd;
+            color: white;
+            z-index: 80;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="question">Israa, do you love me? ❤️</h1>
+
+    <div class="image-container">
+        <img id="main-image" src="https://media.tenor.com/7S-o_e6P6Y4AAAAM/milk-and-mocha-bear.gif" alt="Cute characters">
+    </div>
+    
+    <div class="buttons-wrapper">
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn">No</button>
+    </div>
+
+    <script>
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const image = document.getElementById('main-image');
+        const question = document.getElementById('question');
+
+        let noCount = 0;
+        let yesScale = 1;
+        let noScale = 1;
+
+        // Consistent character GIFs
+        const states = {
+            start: "https://media.tenor.com/7S-o_e6P6Y4AAAAM/milk-and-mocha-bear.gif",
+            sad1: "https://media.tenor.com/V9r9pA_Y_3AAAAAM/milk-and-mocha-milk-bear.gif",
+            sad2: "https://media.tenor.com/yS7a4v6Uf60AAAAM/milk-and-mocha.gif",
+            sad3: "https://media.tenor.com/83p16vP_v_0AAAAM/milk-and-mocha-bear.gif",
+            happy: "https://media.tenor.com/Z9_S_X8B7mYAAAAM/milk-and-mocha-bear-kiss.gif"
+        };
+
+        const messages = [
+            "Are you sure Sarouaa?? 🥺",
+            "Please think again... 💔",
+            "Think more babeee! 😭",
+            "You can't escape my love!"
+        ];
+
+        noBtn.addEventListener('click', () => {
+            noCount++;
+            
+            if (noCount <= 3) {
+                // Change Text and Image
+                question.innerText = messages[Math.min(noCount - 1, messages.length - 1)];
+                
+                if(noCount === 1) image.src = states.sad1;
+                if(noCount === 2) image.src = states.sad2;
+                if(noCount === 3) image.src = states.sad3;
+
+                // Scale Logic
+                yesScale += 1.8; // Makes Yes grow very fast
+                noScale -= 0.2;  // Makes No shrink
+                
+                yesBtn.style.transform = `scale(${yesScale})`;
+                noBtn.style.transform = `scale(${noScale})`;
+            }
+
+            if (noCount >= 3) {
+                moveButton();
+            }
+        });
+
+        // Makes the button run away
+        noBtn.addEventListener('mouseover', () => {
+            if (noCount >= 3) {
+                moveButton();
+            }
+        });
+
+        function moveButton() {
+            // Calculate random positions that stay within the screen
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+            noBtn.style.zIndex = "1000";
+        }
+
+        yesBtn.addEventListener('click', () => {
+            question.innerText = "I knew it! I love you too! ❤️✨";
+            image.src = states.happy;
+            noBtn.style.display = 'none';
+            
+            // Reset Yes button to a nice size
+            yesBtn.style.transform = 'scale(1.2)';
+            yesBtn.style.position = 'relative';
+            yesBtn.style.width = 'auto';
+            yesBtn.style.height = 'auto';
+        });
+    </script>
+</body>
+</html>
