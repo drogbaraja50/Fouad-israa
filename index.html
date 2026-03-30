@@ -34,8 +34,6 @@
             box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3), 0 0 0 12px rgba(255, 200, 200, 0.7);
             padding: 2rem 2rem 3rem;
             text-align: center;
-            transition: all 0.2s;
-            backdrop-filter: blur(2px);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -95,6 +93,7 @@
             min-height: 180px;
             position: relative;
             padding: 20px 0;
+            transition: gap 0.2s ease;
         }
 
         .btn {
@@ -104,13 +103,12 @@
             padding: 20px 48px;
             border-radius: 120px;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.34, 1.2, 0.64, 1);
+            transition: transform 0.2s cubic-bezier(0.34, 1.2, 0.64, 1), box-shadow 0.2s;
             box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
             font-family: inherit;
             min-width: 180px;
             letter-spacing: 2px;
             z-index: 10;
-            max-width: 90%;
             white-space: nowrap;
         }
 
@@ -141,7 +139,6 @@
             font-size: 2.5rem !important;
             padding: 28px 70px !important;
             min-width: 300px;
-            white-space: nowrap;
         }
 
         #noBtn:disabled {
@@ -176,7 +173,7 @@
 <body>
 <div class="card">
     <div class="picture-frame">
-        <img id="cuteImage" src="https://media.tenor.com/VSzF7_kRqbcAAAAC/couple-cute.gif" alt="cute couple">
+        <img id="cuteImage" src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExd3BqeWU4dG91cG13NnB4eW5pZ2FtbzN0YmFjZnh3aXpuN2N5Z2R5bCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26gR2qWNyLhQ3a8kI/giphy.gif" alt="cute couple">
     </div>
     <div class="question">💕 Israa, do you love me? 💕</div>
     <div class="dynamic-message" id="messageBox">💗 my heart is yours 💗</div>
@@ -199,19 +196,19 @@
     const cuteImage = document.getElementById('cuteImage');
     const buttonsContainer = document.getElementById('buttonsArea');
 
-    // ✅ Valid GIFs (two characters, cute couple)
-    const defaultGif = "https://media.tenor.com/VSzF7_kRqbcAAAAC/couple-cute.gif";      // happy couple
-    const sadGif1   = "https://media.tenor.com/MmKxUmT8yU0AAAAC/sad-boy.gif";            // sad boy (male sad)
-    const sadGif2   = "https://media.tenor.com/hsd5CgzZ74sAAAAC/sad-anime-couple.gif";   // sad couple
-    const sadGif3   = "https://media.tenor.com/HbHmK9_3Y2UAAAAC/sad-cat-couple.gif";     // very sad male/couple
-    const happyGif  = "https://media.tenor.com/Lh3kQcX5eBEAAAAC/anime-kiss.gif";         // kissing/cuddling
+    // ✅ Reliable GIPHY URLs (two characters, cute couple)
+    const defaultGif = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExd3BqeWU4dG91cG13NnB4eW5pZ2FtbzN0YmFjZnh3aXpuN2N5Z2R5bCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26gR2qWNyLhQ3a8kI/giphy.gif";  // happy couple dancing
+    const sadGif1   = "https://media1.tenor.com/m/MmKxUmT8yU0AAAAC/sad-boy.gif";               // sad boy alone (Tenor works)
+    const sadGif2   = "https://media.tenor.com/hsd5CgzZ74sAAAAC/sad-anime-couple.gif";        // sad couple
+    const sadGif3   = "https://media.tenor.com/HbHmK9_3Y2UAAAAC/sad-cat-couple.gif";          // very sad
+    const happyGif  = "https://media.tenor.com/Lh3kQcX5eBEAAAAC/anime-kiss.gif";              // kissing
 
-    // Fallback in case any GIF fails to load (optional)
-    function setImageWithFallback(imgElement, url) {
+    // Fallback function
+    function setImage(imgElement, url) {
         imgElement.src = url;
         imgElement.onerror = () => {
             console.warn(`Failed to load: ${url}`);
-            imgElement.src = defaultGif; // fallback to default
+            imgElement.src = defaultGif;
         };
     }
 
@@ -219,16 +216,27 @@
         "💔 Oh no... think again, love! 💕",
         "🥺 Are you sure? My heart flutters only for you... click YES?",
         "😭 Don't break my heart! I'll keep asking cutely!",
-        "💘 You can't escape my love! Just say YES!"
+        "💘 Last chance before the NO button runs away! Just say YES!"
     ];
+
+    // Adjust gap between buttons to prevent overlap
+    function adjustGap() {
+        if (yesClicked) return;
+        const yesScale = parseFloat(yesButton.style.transform.replace('scale(', '')) || 1;
+        const noScale = parseFloat(noButton.style.transform.replace('scale(', '')) || 1;
+        const baseGap = 50;
+        // Increase gap based on scale to avoid overlap
+        let extraGap = Math.max(0, (yesScale - 1) * 80 + (1 - noScale) * 40);
+        buttonsContainer.style.gap = `${baseGap + extraGap}px`;
+    }
 
     function updateSadMood() {
         if (yesClicked) return;
 
-        if (noClickCount === 0) setImageWithFallback(cuteImage, defaultGif);
-        else if (noClickCount === 1) setImageWithFallback(cuteImage, sadGif1);
-        else if (noClickCount === 2) setImageWithFallback(cuteImage, sadGif2);
-        else if (noClickCount >= 3) setImageWithFallback(cuteImage, sadGif3);
+        if (noClickCount === 0) setImage(cuteImage, defaultGif);
+        else if (noClickCount === 1) setImage(cuteImage, sadGif1);
+        else if (noClickCount === 2) setImage(cuteImage, sadGif2);
+        else if (noClickCount >= 3) setImage(cuteImage, sadGif3);
 
         let msg = "";
         if (noClickCount === 1) msg = noMessages[0];
@@ -250,6 +258,7 @@
             let noScale = Math.max(0.2, 1 - (noClickCount * 0.3));
             yesButton.style.transform = `scale(${yesScale})`;
             noButton.style.transform = `scale(${noScale})`;
+            adjustGap();
 
             if (noClickCount >= 2) {
                 yesButton.style.boxShadow = "0 0 0 6px #ffb7c5, 0 18px 32px rgba(0,0,0,0.3)";
@@ -263,6 +272,7 @@
             yesButton.style.transform = "scale(2.2)";
             noButton.style.transform = "scale(0.2)";
             noButton.style.opacity = "0.7";
+            adjustGap();
         }
     }
 
@@ -324,6 +334,7 @@
             noButton.style.opacity = "0.6";
             messageBox.innerHTML = "💖 You can't say NO anymore! The button is running away... just press YES! 💖";
             startMovingNoButton();
+            adjustGap();
         } else if (noClickCount < 3 && noDisabled) {
             noDisabled = false;
             noButton.disabled = false;
@@ -366,7 +377,7 @@
         }
         noDisabled = true;
         stopMovingNoButton();
-        setImageWithFallback(cuteImage, happyGif);
+        setImage(cuteImage, happyGif);
         messageBox.innerHTML = "💞 YAAAY! I LOVE YOU TOO! Now let's cuddle forever! 💞";
         messageBox.style.background = "#ffe0e7";
         messageBox.style.fontSize = "1.8rem";
@@ -378,6 +389,7 @@
         noButton.style.pointerEvents = "none";
         document.querySelector('.question').innerHTML = "💘 YOU LOVE ME! 💘";
         createFloatingHearts();
+        adjustGap();
     }
 
     function createFloatingHearts() {
@@ -425,6 +437,7 @@
             if (left < 0) noButton.style.left = '0px';
             if (top < 0) noButton.style.top = '0px';
         }
+        adjustGap();
     }
 
     yesButton.addEventListener('click', onYesClick);
@@ -444,7 +457,7 @@
         noButton.style.left = "";
         noButton.style.top = "";
         noButton.classList.remove('moving-btn');
-        setImageWithFallback(cuteImage, defaultGif);
+        setImage(cuteImage, defaultGif);
         messageBox.innerHTML = "💗 my heart is yours 💗";
         messageBox.style.background = "";
         document.querySelector('.question').innerHTML = "💕 Do you love me? 💕";
@@ -452,6 +465,7 @@
         stopMovingNoButton();
         if (window._moveHandler) buttonsContainer.removeEventListener("mousemove", window._moveHandler);
         moveHandlerActive = false;
+        adjustGap();
     }
     init();
 </script>
