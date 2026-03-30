@@ -3,83 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>I have a question...</title>
+    <title>I have a special question...</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            margin: 0;
-            background-color: #ffe6e6;
-            font-family: 'Arial', sans-serif;
-            overflow: hidden;
+            width: 100vw;
+            background-color: #ffdae0; /* Cute light pink */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; /* Prevents scrollbars when button moves */
         }
 
         .container {
             text-align: center;
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            max-width: 400px;
             width: 90%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
         }
 
         #main-image {
-            width: 200px;
-            height: 200px;
-            object-fit: contain;
-            border-radius: 15px;
-            margin-bottom: 20px;
+            width: 60vh; /* Takes up a large portion of height */
+            max-width: 80%;
+            height: auto;
+            border-radius: 30px;
+            margin-bottom: 30px;
+            transition: all 0.5s ease-in-out;
         }
 
         h1 {
             color: #d63384;
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            min-height: 60px;
+            font-size: 3rem;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            min-height: 80px;
         }
 
-        .buttons {
+        .buttons-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
-            height: 100px;
+            gap: 30px;
+            width: 100%;
+            min-height: 300px; /* Space for the growing button */
         }
 
         button {
-            padding: 10px 25px;
+            padding: 20px 50px;
             border: none;
-            border-radius: 10px;
+            border-radius: 20px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 1rem;
-            transition: all 0.2s ease;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        width 0.3s ease, height 0.3s ease, font-size 0.3s ease;
         }
 
         #yesBtn {
             background-color: #ff4d94;
             color: white;
-            z-index: 10;
+            z-index: 100; /* Ensure it stays on top */
         }
 
         #noBtn {
-            background-color: #adb5bd;
-            color: white;
+            background-color: #ffffff;
+            color: #888;
             position: relative;
+        }
+
+        /* Success screen styles */
+        .celebration {
+            font-size: 4rem !important;
+            color: #ff0066 !important;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img id="main-image" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif" alt="Cute character">
-        <h1 id="question">Israa do you love me? ❤️</h1>
+        <img id="main-image" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif" alt="Cute characters">
+        <h1 id="question">Israa, do you love me? ❤️</h1>
         
-        <div class="buttons">
+        <div class="buttons-container">
             <button id="yesBtn">Yes</button>
             <button id="noBtn">No</button>
         </div>
@@ -92,65 +109,74 @@
         const question = document.getElementById('question');
 
         let noCount = 0;
-        let yesSize = 1;
-        let noSize = 1;
+        let yesScale = 1;
+        let noScale = 1;
 
-        const messages = [
-            "No",
-            "Are you sure??",
-            "Please think again...",
-            "Think more Sarouaa! 🥺",
-            "No more sushi if said No this time!",
+        const gifs = [
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/vSkXT9AZdY63FidC0v/giphy.gif", // Sad 1
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/7SF5scGB2AFrO/giphy.gif", // Sadder 2
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/OPU6wEKPcElt6/giphy.gif"  // Very sad 3
         ];
 
-        const sadImages = [
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/vSkXT9AZdY63FidC0v/giphy.gif",
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/OPU6wEKPcElt6/giphy.gif",
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/7SF5scGB2AFrO/giphy.gif"
+        const messages = [
+            "Are you sure Sarouaa? 🥺",
+            "Please think about it again... 🧸",
+            "No more cuddles if you say No this time! 😭"
         ];
 
         noBtn.addEventListener('click', () => {
             noCount++;
             
-            // Update Text and Image
             if (noCount <= 3) {
-                question.innerText = messages[noCount];
-                image.src = sadImages[Math.min(noCount - 1, sadImages.length - 1)];
+                // Change text and image
+                question.innerText = messages[noCount - 1];
+                image.src = gifs[noCount - 1];
                 
-                // Scale buttons
-                yesSize += 0.4;
-                noSize -= 0.15;
-                yesBtn.style.transform = `scale(${yesSize})`;
-                noBtn.style.transform = `scale(${noSize})`;
-            }
+                // Aggressive scaling
+                yesScale += 1.5; // Grows significantly
+                noScale -= 0.2;  // Shrinks
+                
+                yesBtn.style.transform = `scale(${yesScale})`;
+                noBtn.style.transform = `scale(${noScale})`;
 
-            // Start moving away after 3 clicks
-            if (noCount >= 3) {
-                moveButton();
-            }
-        });
-
-        // Evasive logic for the No button
-        noBtn.addEventListener('mouseover', () => {
-            if (noCount >= 3) {
-                moveButton();
+                // Special 3rd click logic: Yes button takes half the screen
+                if (noCount === 3) {
+                    yesBtn.style.width = "50vw";
+                    yesBtn.style.height = "20vh";
+                    yesBtn.style.fontSize = "3rem";
+                    noBtn.innerText = "Try clicking me now!";
+                }
             }
         });
 
-        function moveButton() {
-            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-            
-            noBtn.style.position = 'absolute';
-            noBtn.style.left = `${x}px`;
-            noBtn.style.top = `${y}px`;
-        }
+        // Run away logic
+        const moveButton = () => {
+            if (noCount >= 3) {
+                const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+                const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+                
+                noBtn.style.position = 'fixed';
+                noBtn.style.left = `${x}px`;
+                noBtn.style.top = `${y}px`;
+            }
+        };
+
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', moveButton); // For mobile support
 
         yesBtn.addEventListener('click', () => {
-            question.innerText = "Yay! I love you too! ❤️✨";
-            image.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXp3Y3Zzbmpsbm45eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/MDJ9IbxxvDUQM/giphy.gif";
+            question.innerHTML = "I KNEW IT! <br> I love you too! ❤️";
+            question.classList.add('celebration');
+            // Kissing GIF
+            image.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExN3Z6amx6bmR6eW56eHozbmR6eW56eHozbmR6eW56eHozbmR6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/l4pTdcifP_FPl615m/giphy.gif";
+            
+            // Cleanup
             noBtn.style.display = 'none';
-            yesBtn.style.transform = 'scale(1.2)';
+            yesBtn.style.transform = 'scale(1)';
+            yesBtn.style.width = 'auto';
+            yesBtn.style.height = 'auto';
+            yesBtn.style.fontSize = '1.5rem';
+            yesBtn.innerText = "Forever! ✨";
         });
     </script>
 </body>
